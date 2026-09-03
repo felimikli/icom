@@ -1,0 +1,26 @@
+#include "icom_helpers.h"
+
+int main() {
+    double pi = 3.0, double pir = 3.14159265358979323846;
+    
+    double tolerancia;
+    cout << "Ingrese la tolerancia: ";
+    cin >> tolerancia;
+
+    double termino;
+    int i;
+    do {
+        int n = 2 * i; 
+        termino = 4 / (n * (n + 1) * (n + 2));
+
+        if (i % 2 = 1) {
+            pi -= termino;  
+        } else {
+            pi += termino;  
+        }
+
+    } while(termino < tolerancia)
+
+
+    return pi;
+}
