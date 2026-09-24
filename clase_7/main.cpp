@@ -583,6 +583,9 @@ void __ordenarVector(std::vector<int> &b, int low, int high)
 	__ordenarVector(b, n + 1, high);
 }
 
+// TODO esta implementacion sigue sin ser optima pues erase e insert son  ineficientes
+// se recomienda al lector modificarla para usar std::swap() (buscar en la referencia) para ordenar de manera más eficiente
+
 // una interfaz mas linda, asi puedo ordenar todo sin especificar que ordeno desde 0 y b.size(), 
 void ordenarVector(std::vector<int> &b) {
 	__ordenarVector(b, 0, b.size());
