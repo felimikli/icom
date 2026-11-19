@@ -48,6 +48,11 @@ class STM_image {
 };
 
 struct Punto2DDiscreto {
+	Punto2DDiscreto(int x_, int y_){
+
+		x = x_;
+		y = y_;
+	}
     int x, y;
 };
 
@@ -65,26 +70,6 @@ class GrafenoAnalyzer {
 
     private:
         // ...
-	void islaFloodFill(STM_image* img, IslaGrafeno* isla, int i, int j) {
-		if(img->getPixel(i, j) < threshold) {
-			return;
-		}
-		img->setPixel(i, j, 0);
-		isla->puntos.push_back({i, j});
-		if(i < img->getWidth() - 1) {
-			islaFloodFill(img, isla, i + 1, j);
-		}
-		if(i > 0) {
-			islaFloodFill(img, isla, i - 1, j);
-		}
-
-		if(j < img->getHeight() - 1) {
-			islaFloodFill(img, isla, i, j + 1);
-		}
-		if(j > 0) {
-			islaFloodFill(img, isla, i, j - 1);
-		}
-	}
 
         unsigned short threshold;
 };
@@ -113,33 +98,63 @@ STM_image stmLoadImage(const string &fname)
     return img;
 }
 
-// TODO: implementar
+void make_isla(IslaGrafeno &isla, STM_image &img, int i, int j, int tre){
+	
+
+	if(i >= img.getWidth() || i < 0) return;
+	if(j >= img.getHeight() || j < 0) return;
+
+	if(img.getPixel(i,j) <  tre) return; 
+
+	img.setPixel(i,j,0);
+	Punto2DDiscreto punto(i,j);
+	isla.puntos.push_back(punto);
+
+	make_isla(isla, img, i+1,j,tre);
+	make_isla(isla, img, i-1,j,tre);
+	make_isla(isla, img, i,j+1,tre);
+	make_isla(isla, img, i,j-1,tre);
+
+	return;
+} 
+
 vector<IslaGrafeno> GrafenoAnalyzer::analyze(STM_image img)
 {
-	vector<IslaGrafeno> islas;
-	for(int i = 0; i < img.getWidth(); i++) {
-		for(int j = 0; j < img.getHeight(); j++) {
-			if(img.getPixel(i, j) >= threshold) {
-				IslaGrafeno isla;
-				islaFloodFill(&img, &isla, i, j);
-				islas.push_back(isla);
-			}
+    vector<IslaGrafeno> islas;
+	
+    int wi = img.getWidth();
+    int he = img.getHeight();
+
+
+    for(int j = 0; j < wi; j ++){
+	for(int i = 0; i < he; i++){
+		IslaGrafeno isla;
+		if(img.getPixel(i,j) >= threshold){
+			make_isla(isla, img,i,j, threshold);
+			islas.push_back(isla);			
 		}
 	}
+    }
 
-	return islas;
+
+
+
+
+    // ...
+
+    return islas;
 }
 
 int main()
 {
-	STM_image img = stmLoadImage("islas_grafeno.img");
-	GrafenoAnalyzer gfa(500);
+    STM_image img = stmLoadImage("islas_grafeno.img");
+    GrafenoAnalyzer gfa(500);
 
-	vector<IslaGrafeno> islas = gfa.analyze(img);
+    vector<IslaGrafeno> islas = gfa.analyze(img);
 
-	cout << "cantidad de islas: " << islas.size() << endl;
-	for (size_t i = 0; i < islas.size(); ++i)
-		cout << "isla " << i << ": size: " << islas[i].puntos.size() << endl;
+    cout << "cantidad de islas: " << islas.size() << endl;
+    for (size_t i = 0; i < islas.size(); ++i)
+        cout << "isla " << i << ": size: " << islas[i].puntos.size() << endl;
 
-	return 0;
+    return 0;
 }
